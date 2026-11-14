@@ -1,49 +1,49 @@
-const uuid = require('uuid').v4
-const bcrypt = require('bcrypt')
+import {
+    insertUser,
+    selectAllUsers,
+    selectUserByEmail,
+    selectUserById,
+    updateUserSet,
+    deleteUserById } from '../config/db/querys.js'
 
+import bcrypt from "bcrypt";
 
-let users = [
-    { id: '1', name: "riguette", email: 'riguette12@gmail.com', password: '$2b$10$1k5uRJtqbXGY3b3XYAZvd.CBudHJ9aSCtCWmf6VRIWoCI0zIreFtG', role: 'admin' }
-]
-
-const usersModel = {
-    getAllUsers: () => {
-        return users.map(user => ({ ...user, password: undefined }))
+export const usersModel = {
+    getAllUsers: async () => {
+        return await selectAllUsers()
     },
 
-    getUserById: (id) => {
-        const user = users.find(user => user.id === id)
-        return user ? { ...user, password: undefined } : null
-    } ,
+    getUserById: async (id) => {
+        const user = await selectUserById(id)
+        return user || null
+    },
 
-    getUserByEmail: (email) => users.find(user => user.email === email),
+    getUserByEmail: async (email) => {
+        const user = await selectUserByEmail(email)
+        return user || null
+    },
 
-    createUser: (name, email, password, role = 'standard') => {
-        const newUser = {
-            id: uuid(),
+    createUser: async (name, email, password, role = 'standard') => {
+        const passwordHash = await bcrypt.hash(password, 10)
+        const newUser = await insertUser(
             name,
             email,
-            password: bcrypt.hashSync(password, 10),
+            passwordHash,
             role,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-        users.push(newUser)
+            new Date(),
+            new Date()
+        )
         return newUser
     },
 
-    updateUser: (id, updatedUser) => {
-        const userIndex = users.findIndex(user => user.id === id)
-        users[userIndex] = { ...users[userIndex], ...updatedUser, updatedAt: new Date(), password: undefined }
-        return users[userIndex]
+    updateUser: async (id, updatedUser) => {
+        const user = await selectUserById(id)
+        if (!user) return null
+        const newUser = await updateUserSet(id, { ...user, ...updatedUser })
+        return newUser
     },
 
-    deleteUser: (id) => {
-        const userIndex = users.findIndex(user => user.id === id)
-        if (userIndex !== -1) {
-            users.splice(userIndex, 1)
-        }
+    deleteUser: async (id) => {
+        await deleteUserById(id)
     }
 }
-
-module.exports = usersModel

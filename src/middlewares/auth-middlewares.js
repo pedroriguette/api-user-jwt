@@ -1,8 +1,10 @@
-const jwt = require('jsonwebtoken')
-const usersModel = require('../models/users-model')
+// const jwt = require('jsonwebtoken')
+// const usersModel = require('../models/users-model.js')
 
+import jwt from 'jsonwebtoken'
+import { usersModel } from '../models/users-model.js'
 
-const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
     const authHeader = req.headers.authorization
     if (!authHeader) {
         return res.status(401).json({ message: 'Authorization header required' })
@@ -11,7 +13,7 @@ const authMiddleware = (req, res, next) => {
     const token = authHeader.split(' ')[1]
     try {
         const verifyToken = jwt.verify(token, process.env.JWT_KEY)
-        const user = usersModel.getUserById(verifyToken.id)
+        const user = await usersModel.getUserById(verifyToken.id)
         if (!user) return res.status(404).json({ message: "Invalid User" })
         req.authenticatedUser = user
         next()
@@ -20,11 +22,11 @@ const authMiddleware = (req, res, next) => {
     }
 }
 
-const ensureAdmin = (req, res, next) => {
+export const ensureAdmin = (req, res, next) => {
     if (req.authenticatedUser.role === 'admin') {
-        next()
-    }
+        return next()
+    } 
     res.status(401).json({ message: 'Not authorization' })
 }
 
-module.exports = { authMiddleware, ensureAdmin }
+export default { authMiddleware, ensureAdmin }

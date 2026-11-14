@@ -1,11 +1,12 @@
-require('dotenv').config()
 
-const express = require('express')
-const authRouter = require('./routers/auth')
-const adminRouter = require('./routers/admin')
+import 'dotenv/config';
+import express from 'express'
+import authRouter from './routers/auth.js'
+import adminRouter from './routers/admin.js'
 
-const swaggerUi = require('swagger-ui-express')
-const swaggerJsdoc = require('swagger-jsdoc')
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsdoc from 'swagger-jsdoc'
+
 const app = express()
 
 app.use(express.json())

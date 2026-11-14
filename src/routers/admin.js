@@ -1,6 +1,6 @@
-const express = require('express')
-const usersControllers = require('../controllers/user-controllers')
-const { authMiddleware, ensureAdmin } = require('../middlewares/auth-middlewares')
+import { authMiddleware, ensureAdmin } from '../middlewares/auth-middlewares.js'
+import { usersControllers } from '../controllers/user-controllers.js'
+import express from 'express'
 
 const adminRouter = express.Router()
 /**
@@ -79,4 +79,4 @@ adminRouter.put('/users/:id', authMiddleware, ensureAdmin, usersControllers.putU
 adminRouter.delete('/users/:id', authMiddleware, ensureAdmin, usersControllers.deleteUser)
 
 
-module.exports = adminRouter
+export default adminRouter

@@ -1,17 +1,5 @@
-const sql = require("./db")
+import { sql } from "./db.js"
 
-
-const createUsersTable = async () => {
-    return await sql`CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
-        updatedAt TIMESTAMP NOT NULL DEFAULT NOW()
-    )`
-}
 
 const selectAllUsers = async () => {
     const users = await sql`SELECT * FROM users`
@@ -35,5 +23,21 @@ const selectUserById = async (id) => {
     return user[0]
 }
 
+const updateUserSet = async (id, user) => {
+    const newUser = await sql`UPDATE users SET ${sql(user, 'name', 'email', 'role', 'updatedat')} 
+    WHERE id = ${id}`
+    return newUser[0]
+}
 
-module.exports = { createUsersTable, selectAllUsers, insertUser, selectUserByEmail, selectUserById }
+const deleteUserById = async (id) => {
+    await sql`DELETE FROM users WHERE id = ${id}`
+}
+
+export {
+    selectAllUsers,
+    insertUser,
+    selectUserByEmail,
+    selectUserById,
+    updateUserSet,
+    deleteUserById
+}
