@@ -53,7 +53,7 @@ export const usersControllers = {
             createdAt: user.createdat,
             updatedAt: new Date()
         }
-        await usersModel.updateUser(id, newUser)
+        await usersModel.updateUser(id, { ...user, ...newUser })
         res.status(200).json(newUser)
     },
 
